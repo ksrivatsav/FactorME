@@ -1,5 +1,6 @@
 package com.group9.factormebud;
 
+import android.content.ContentValues;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -82,13 +83,34 @@ public class GamePlay extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onPause();
+
+        DataBaseHelper myDbHelper;
+        myDbHelper = new DataBaseHelper(this);
+        ContentValues lvlData = new ContentValues();
         SharedPreferences sharedPrefs = getSharedPreferences(getString(R.string.PREF_FILE), MODE_PRIVATE);
         SharedPreferences.Editor ed;
         int lcurlvlHScr = sharedPrefs.getInt(getString(R.string.curLvlHScr), 0);
+        int lcurlvlid = sharedPrefs.getInt(getString(R.string.curLvlId), 1);
         if (mMainMapView.score > lcurlvlHScr){
             ed = sharedPrefs.edit();
             ed.putInt(getString(R.string.curLvlHScr), mMainMapView.score);
             ed.commit();
+            lvlData.put("HighScore", mMainMapView.score);
+
+            //update the current highscore in the Levels file
+
+            if (lcurlvlid == 1 && lcurlvlHScr > 300 ){
+                //Unlock the level 2
+            }
+
+            if (lcurlvlid == 2 && lcurlvlHScr > 450 ){
+                //Unlock the level 3
+            }
+
+            if (lcurlvlid == 3 && lcurlvlHScr > 750 ){
+                //Unlock the level 4
+            }
+
         }
 
         // Pause the game along with the activity

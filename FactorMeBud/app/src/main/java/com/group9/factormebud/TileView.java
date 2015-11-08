@@ -17,7 +17,7 @@ import android.view.View;
 
 public class TileView extends View {
     public static final String TAG = "Factor Me";
-
+    public static int SCORE=0;
 
     /**
      * Labels for the drawables that will be loaded into the TileView class
@@ -191,7 +191,7 @@ public class TileView extends View {
         Bitmap pause = Bitmap.createScaledBitmap(pauseimage, mTileSize, mTileSize, false);
         canvas.drawBitmap(jumble, 100, 140, mPaint);
         canvas.drawBitmap(pause, 300, 50, mPaint);
-        String strscore=Integer.toString(99999);
+        String strscore=Integer.toString(SCORE);
         mPaint.setColor(Color.WHITE);
         mPaint.setTextSize(50);
         canvas.drawText(strscore, 130, 80, mPaint);

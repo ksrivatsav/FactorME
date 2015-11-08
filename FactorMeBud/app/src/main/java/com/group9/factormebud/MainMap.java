@@ -29,6 +29,7 @@ public class MainMap extends TileView{
     public static int ranRange = 60;
 	public static final int PTileInterval=10;
     public int score =0;
+	public int scorefactor=10;
 
 	public int tempCount;
 	/**
@@ -47,7 +48,8 @@ public class MainMap extends TileView{
 	/**
 	 * This is speed parameter of the game
 	 */
-    public long mMoveDelay;
+
+	public long mMoveDelay;
 	public int random;
 
 	private int mGameState = PAUSE;
@@ -107,7 +109,10 @@ public class MainMap extends TileView{
 		@Override
 		public void handleMessage(Message msg) {
 			if(mGameState == READY) {
-
+				if(LEVEL==1) scorefactor=10;
+				else if(LEVEL==2) scorefactor=15;
+				else if(LEVEL==3) scorefactor=20;
+				else scorefactor=25;
 				if(msg.what == 1) {//TODO change to final Name ... LAST TILE PLACED, CREATE NEW TILE
 					int x,y;
 
@@ -140,7 +145,10 @@ public class MainMap extends TileView{
 	//							else if(mapCur.map[row][col]==107)
 	//								mapCur.bombTilePowerup(x, y);
 //								else
-									mapCur.patternCheckAndClear(x, y);
+								int rawscore=	mapCur.patternCheckAndClear(x, y);
+								if (rawscore==50||rawscore==100) score=rawscore;
+								else score=rawscore*scorefactor;
+								SCORE=score;
 	//							mapOld.copyFrom(mapCur);
 	//							mapLast.copyFrom(mapCur);
 	//							update();
