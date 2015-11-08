@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:background="@drawable/app_back"
+    android:id="@+id/levelLayout"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:showIn="@layout/activity_levels" tools:context="com.group9.factormebud.LevelsActivity">
+
+    <Button
+        android:layout_width="fill_parent"
+        android:layout_height="70dp"
+        android:text="@string/btLvlBeg"
+        android:id="@+id/btLvlBeg"
+        android:layout_marginTop="180dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:clickable="true"
+        android:background="@drawable/enter_back"
+        android:padding="20dp"
+        android:textColor="#ffffffff"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:nestedScrollingEnabled="false" />
+
+    <Button
+        android:layout_width="fill_parent"
+        android:layout_height="70dp"
+        android:text="@string/btLvlInt"
+        android:id="@+id/btLvlInt"
+        android:layout_below="@+id/btLvlBeg"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/enter_back"
+        android:padding="20dp"
+        android:textColor="#ffffffff"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:clickable="true" />
+
+    <Button
+        android:layout_width="fill_parent"
+        android:layout_height="70dp"
+        android:text="@string/btLvlAdv"
+        android:id="@+id/btLvlAdv"
+        android:layout_below="@+id/btLvlInt"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/enter_back"
+        android:padding="20dp"
+        android:textColor="#ffffffff"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:clickable="true" />
+
+    <Button
+        android:layout_width="fill_parent"
+        android:layout_height="70dp"
+        android:text="@string/btLvlExp"
+        android:id="@+id/btLvlExp"
+        android:layout_below="@+id/btLvlAdv"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/enter_back"
+        android:padding="20dp"
+        android:textColor="#ffffffff"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:clickable="true" />
+
+
+    <TextView
+        android:layout_width="200dp"
+        android:layout_height="100dp"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Levels"
+        android:id="@+id/textView3"
+        android:textColor="#ffffffff"
+        android:fontFamily="sans-serif-medium"
+        android:textSize="65sp"
+        android:textStyle="bold"
+        android:layout_centerHorizontal="true" />
+
+</RelativeLayout>

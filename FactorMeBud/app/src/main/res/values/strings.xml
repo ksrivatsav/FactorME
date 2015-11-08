@@ -1,0 +1,42 @@
+<resources>
+    <string name="app_name">Factor Me Bud</string>
+    <string name="action_settings">Settings</string>
+    <string name="btPlay">Play</string>
+    <string name="btLevels">Levels</string>
+    <string name="btSettings">Settings</string>
+    <string name="title_activity_levels">LevelsActivity</string>
+    <string name="beginner">beginner</string>
+    <string name="intermediate">intermediate</string>
+    <string name="advanced">advanced</string>
+    <string name="expert">expert</string>
+    <string name="btLvlAdv">Advanced</string>
+    <string name="btLvlInt">Intermediate</string>
+    <string name="btLvlBeg">Beginner</string>
+    <string name="btLvlExp">Expert</string>
+    <string name="PREF_FILE">APP_PREF_FILE</string>
+    <string name="isInitialized">IS_INITIALIZED</string>
+    <string name="isFirstTime">IS_FIRST_TIME</string>
+    <string name="curLvlId">CUR_LVL_ID</string>
+    <string name="curLvlHScr">CUR_LVL_HIGH_SCORE</string>
+    <string name="High_Score">High Score</string>
+    <string name="title_activity_settings">Settings</string>
+    <string name="titleSettings">Settings</string>
+    <string name="swTheme">THEME</string>
+    <string name="swSound">SOUND</string>
+    <string name="switch_on">On</string>
+    <string name="switch_off">Off</string>
+    <string name="switch_Orange">Orange</string>
+    <string name="switch_Aqua">Aqua</string>
+    <string name="curTheme">CUR_THEME</string>
+    <string name="isSoundOn">IS_SOUND_ON</string>
+    <string name="title_activity_game_play">Game Play</string>
+    <string name="btViewTut">View Tutorial</string>
+    <string name="skip_button">SKIP</string>
+    <string name="done_button">DONE</string>
+    <string name="View_intro">Factor Me</string>
+    <string name="title_activity_pause_game">Pause Game</string>
+    <string name="btResume">Resume Game</string>
+    <string name="btRestart">Restart Game</string>
+    <string name="btQuit">Quit Game</string>
+
+</resources>
