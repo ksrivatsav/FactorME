@@ -82,6 +82,7 @@ public class LevelsActivity extends AppCompatActivity implements View.OnClickLis
             }
         }
 
+        myDbHelper.close();
 
 //        lvlBegLock = false;
 //        lvlIntLock = true;

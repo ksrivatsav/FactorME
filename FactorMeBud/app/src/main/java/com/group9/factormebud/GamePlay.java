@@ -2,12 +2,15 @@ package com.group9.factormebud;
 
 import android.content.ContentValues;
 import android.content.SharedPreferences;
+import android.database.SQLException;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+
+import java.io.IOException;
 
 public class GamePlay extends AppCompatActivity {
 
@@ -37,9 +40,12 @@ public class GamePlay extends AppCompatActivity {
         }
         if (lcurlvlid == 3 || lcurlvlid == 4){
             mMainMapView.ranRange = 100;
+            mMainMapView.randomArray=mMainMapView.getRandomFromArray();
         }else{
             mMainMapView.ranRange = 60;
         }
+
+        mMainMapView.setPENALTY(lcurlvlid);
 //
 //        mMainMapView.setOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -73,9 +79,48 @@ public class GamePlay extends AppCompatActivity {
         SharedPreferences sharedPrefs = getSharedPreferences(getString(R.string.PREF_FILE),MODE_PRIVATE);
         SharedPreferences.Editor ed;
         boolean playMusic = sharedPrefs.getBoolean(getString(R.string.isSoundOn),false);
+
+        DataBaseHelper myDbHelper;
+        myDbHelper = new DataBaseHelper(this);
+
+        try {
+            myDbHelper.createDataBase();
+        } catch (IOException ioe) {
+            throw new Error("Unable to create database");
+        }
+
+        try {
+            myDbHelper.openDataBase();
+        }catch(SQLException sqle){
+            throw sqle;
+        }
         if (playMusic){
             MusicManager.pause();
         }
+
+        int lcurlvlHScr = sharedPrefs.getInt(getString(R.string.curLvlHScr), 0);
+        int lcurlvlid = sharedPrefs.getInt(getString(R.string.curLvlId), 1);
+        if (mMainMapView.score > lcurlvlHScr){
+            ed = sharedPrefs.edit();
+            ed.putInt(getString(R.string.curLvlHScr), mMainMapView.score);
+            ed.commit();
+            //lvlData.put("HighScore", mMainMapView.score);
+
+            //update the current highscore in the Levels file
+            int curHscr = mMainMapView.score;
+            myDbHelper.updateScr(lcurlvlid, curHscr);
+
+            if ((lcurlvlid == 1 && curHscr > 300) || (lcurlvlid == 2 && curHscr > 450 ) ||  (lcurlvlid == 3 && curHscr > 750 ) ){
+                //Unlock the next levels
+                int lnxtlvlid = lcurlvlid + 1;
+                myDbHelper.unlckLvl(lnxtlvlid);
+
+            }
+
+        }
+
+        myDbHelper.close();
+
         // Pause the game along with the activity
         mMainMapView.setMode(MainMap.PAUSE);
     }
@@ -84,34 +129,46 @@ public class GamePlay extends AppCompatActivity {
     protected void onStop() {
         super.onPause();
 
-        DataBaseHelper myDbHelper;
-        myDbHelper = new DataBaseHelper(this);
-        ContentValues lvlData = new ContentValues();
+//        ContentValues lvlData = new ContentValues();
         SharedPreferences sharedPrefs = getSharedPreferences(getString(R.string.PREF_FILE), MODE_PRIVATE);
         SharedPreferences.Editor ed;
+        DataBaseHelper myDbHelper;
+        myDbHelper = new DataBaseHelper(this);
+
+        try {
+            myDbHelper.createDataBase();
+        } catch (IOException ioe) {
+            throw new Error("Unable to create database");
+        }
+
+        try {
+            myDbHelper.openDataBase();
+        }catch(SQLException sqle){
+            throw sqle;
+        }
+
         int lcurlvlHScr = sharedPrefs.getInt(getString(R.string.curLvlHScr), 0);
         int lcurlvlid = sharedPrefs.getInt(getString(R.string.curLvlId), 1);
         if (mMainMapView.score > lcurlvlHScr){
             ed = sharedPrefs.edit();
             ed.putInt(getString(R.string.curLvlHScr), mMainMapView.score);
             ed.commit();
-            lvlData.put("HighScore", mMainMapView.score);
+            //lvlData.put("HighScore", mMainMapView.score);
 
             //update the current highscore in the Levels file
+            int curHscr = mMainMapView.score;
+            myDbHelper.updateScr(lcurlvlid,curHscr);
 
-            if (lcurlvlid == 1 && lcurlvlHScr > 300 ){
-                //Unlock the level 2
-            }
+            if ((lcurlvlid == 1 && curHscr > 300) || (lcurlvlid == 2 && curHscr > 450 ) ||  (lcurlvlid == 3 && curHscr > 750 ) ){
+                //Unlock the next levels
+                int lnxtlvlid = lcurlvlid + 1;
+                myDbHelper.unlckLvl(lnxtlvlid);
 
-            if (lcurlvlid == 2 && lcurlvlHScr > 450 ){
-                //Unlock the level 3
-            }
-
-            if (lcurlvlid == 3 && lcurlvlHScr > 750 ){
-                //Unlock the level 4
             }
 
         }
+
+        myDbHelper.close();
 
         // Pause the game along with the activity
         mMainMapView.setMode(MainMap.PAUSE);
@@ -130,6 +187,8 @@ public class GamePlay extends AppCompatActivity {
     @Override
     public void onResume(){
         super.onResume();
+        mMainMapView.setMode(MainMap.READY);
+        mMainMapView.mRedrawHandler.resume();
         SharedPreferences sharedPrefs = getSharedPreferences(getString(R.string.PREF_FILE),MODE_PRIVATE);
         SharedPreferences.Editor ed;
         boolean playMusic = sharedPrefs.getBoolean(getString(R.string.isSoundOn),false);

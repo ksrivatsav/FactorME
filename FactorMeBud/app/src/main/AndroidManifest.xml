@@ -69,8 +69,16 @@
             android:name=".PauseGame"
             android:label="@string/title_activity_pause_game"
             android:screenOrientation="portrait"
-            android:parentActivityName=".GamePlay"
-            android:theme="@android:style/Theme.Dialog" >
+            android:parentActivityName=".GamePlay">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.group9.factormebud.GamePlay" />
+        </activity>
+        <activity
+            android:name=".Gameover"
+            android:label="GAME OVER"
+            android:screenOrientation="portrait"
+            android:parentActivityName=".GamePlay">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.group9.factormebud.GamePlay" />

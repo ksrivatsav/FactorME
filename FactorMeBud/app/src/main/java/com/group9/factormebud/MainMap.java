@@ -2,20 +2,22 @@ package com.group9.factormebud;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
+
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.util.Log;
+
 import android.view.MotionEvent;
 
 import java.util.Random;
+import java.util.Stack;
 
 
 public class MainMap extends TileView{
-//	public static final int	L_TYPE = 109;
+	//	public static final int	L_TYPE = 109;
 	public static final int	BLANK_TYPE = 103;
 	public static final int	BOMB_TYPE = 107;
 //	public static final int J_TYPE = 1;
@@ -26,9 +28,11 @@ public class MainMap extends TileView{
 //	public static final int	I_TYPE = 6;
 
 	public static int LEVEL = 1;
-    public static int ranRange = 60;
+	public static int ranRange = 60;
 	public static final int PTileInterval=10;
-    public int score =0;
+	public static final int BLANKINTERVAL=7;
+	public static final int BOMBINTERVAL=11;
+	public int score =0;
 	public int scorefactor=10;
 
 	public int tempCount;
@@ -44,7 +48,7 @@ public class MainMap extends TileView{
 	 * set ourselves as a target and we can use the sleep()
 	 * function to cause an update/invalidate to occur at a later date.
 	 */
-	private RefreshHandler mRedrawHandler = new RefreshHandler();
+	public RefreshHandler mRedrawHandler = new RefreshHandler();
 	/**
 	 * This is speed parameter of the game
 	 */
@@ -65,10 +69,11 @@ public class MainMap extends TileView{
 	private static FactornoMap mapCur;
 	public static FactornoMap mapOld;
 	private static FactornoMap mapLast;
+	private static FactornoMap mapInter;
 
 	private static int[] randArr = {-1,-1};
 
-	private static int[] randomArray = getRandomFromArray();
+	public static int[] randomArray = getRandomFromArray();
 
 	private static int currElemIndex = 0;
 
@@ -104,8 +109,23 @@ public class MainMap extends TileView{
 	public static final int PAUSE = 0;
 
 
-	private class RefreshHandler extends Handler {
+//	private PopupWindow popupWindow;
+//	private LayoutInflater layoutInflater;
+//	private RelativeLayout relativeLayout;
 
+	public class RefreshHandler extends Handler {
+		boolean is_paused = false;
+		public synchronized void pause()
+		{
+			is_paused = true;
+		}
+
+		public synchronized void resume()
+		{
+			is_paused = false;
+			sendEmptyMessageDelayed(0, mMoveDelay);
+
+		}
 		@Override
 		public void handleMessage(Message msg) {
 			if(mGameState == READY) {
@@ -120,39 +140,71 @@ public class MainMap extends TileView{
 					Log.d(TAG, "msgwhat1 ");
 
 					mapCur.copyFrom(mapLast);
-					for(int row=0;row<7;row++)
+					boolean bomb=false;
+					for(int row=0;row<7&&!bomb;row++)
 					{
-						for(int col=0;col<7;col++){
-							if(mapCur.map[row][col]!=mapOld.map[row][col]){
+						for(int col=0;col<7&&!bomb;col++) {
+							if (mapCur.map[row][col] != mapOld.map[row][col]) {
+								bomb=true;
 								x = row;
 								y = col;
 								Log.d(TAG, "x " + x + "y" + y);
-								if(mapCur.map[row][col]==103) {
+//								if (mapCur.map[row][col] == 103) {
 
-									mapCur.blankTilePowerup(x, y);
+//									mapCur.blankTilePowerup(x, y);
 //									update();
 
 //									mapCur.patternCheckAndClear(x, y);
-								}
-								if(mapCur.map[row][col]==107) {
+//								}
+								if (mapCur.map[row][col] == 107) {
 
-									mapCur.bombTilePowerup(x, y);
-									update();
+									int rawscore1 = mapCur.bombTilePowerup(x, y);
+									Log.d("TAG", "bombscore" + rawscore1);
+									score = score + rawscore1 * scorefactor;
+									SCORE = score;
+									if(score>PENALTY)
+										enablejumble=true;
+									MainMap.this.invalidate();
+
 
 //									mapCur.patternCheckAndClear(x, y);
 								}
 
-	//							else if(mapCur.map[row][col]==107)
-	//								mapCur.bombTilePowerup(x, y);
-//								else
-								int rawscore=	mapCur.patternCheckAndClear(x, y);
-								if (rawscore==50||rawscore==100) score=rawscore;
-								else score=rawscore*scorefactor;
-								SCORE=score;
-	//							mapOld.copyFrom(mapCur);
-	//							mapLast.copyFrom(mapCur);
-	//							update();
-	//							MainMap.this.invalidate();
+								//							else if(mapCur.map[row][col]==107)
+								//								mapCur.bombTilePowerup(x, y);
+								else	//pattern recg
+								{
+									int count = 0;
+									int[][] arraypos = mapCur.patternCheck(x, y);
+									for (int r = 0; r < 10; r++) {
+
+										if (arraypos[r][0] + arraypos[r][1] != 0)
+											count++;
+										else
+											break;
+
+									}
+									if (count >= 3) {
+										drawhighlight = true;
+										for (int i = 0; i < count; i++) {
+											highlightGrid[arraypos[i][0]][arraypos[i][1]] = 907;
+										}
+										MainMap.this.invalidate();
+										//mRedrawHandler.postDelayed();
+										int rawscore = mapCur.clearPattern(arraypos);
+										if (rawscore == 50 || rawscore == 100) score = score + rawscore;
+										else score = score + (rawscore * scorefactor);
+										SCORE = score;
+										if(score>PENALTY)
+											enablejumble=true;
+
+
+									}
+									//							mapOld.copyFrom(mapCur);
+									//							mapLast.copyFrom(mapCur);
+									//							update();
+									//							MainMap.this.invalidate();
+								}
 							}
 						}
 					}
@@ -167,22 +219,28 @@ public class MainMap extends TileView{
 					}
 					//Create currentFactorno power Up Tile at every PTileInterval
 
-						curFactorno = newFactorno(randomArray[currElemIndex], 3, 0);//curFactorno = newFactorno(getRandomFromArr(), 4, 0);//TODO check this
+					curFactorno = newFactorno(randomArray[currElemIndex], 3, 0);//curFactorno = newFactorno(getRandomFromArr(), 4, 0);//TODO check this
 
 					tempCount++;
 
-						Log.d(TAG,"current elem: " + randomArray[currElemIndex]);
-						Log.d(TAG,"next elem: " + randomArray[currElemIndex+1]);
-						currElemIndex++;
+					Log.d(TAG,"current elem: " + randomArray[currElemIndex]);
+					Log.d(TAG,"next elem: " + randomArray[currElemIndex+1]);
+					currElemIndex++;
 
-						mCurNext = randomArray[currElemIndex];
-						mCurNextNext = randomArray[currElemIndex+1];
-						Log.d(TAG,"Next: " + Integer.toString(mCurNext));
+					mCurNext = randomArray[currElemIndex];
+					mCurNextNext = randomArray[currElemIndex+1];
+					Log.d(TAG,"Next: " + Integer.toString(mCurNext));
 
 					if(!mapCur.putFactornoOnMap(curFactorno)) {
 						Log.d(TAG, "Game Over!");
 						initNewGame();
 						mGameState = PAUSE;
+
+						Context context = getContext();
+						Intent intent = new Intent(context,Gameover.class);
+						intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+						context.startActivity(intent);
+
 					}
 					mRedrawHandler.sleep(mMoveDelay);
 				}
@@ -234,6 +292,7 @@ public class MainMap extends TileView{
 		mapCur = new FactornoMap();
 		mapOld = new FactornoMap();
 		mapLast = new FactornoMap();
+		mapInter = new FactornoMap();
 		resetTiles(1000);//resetTiles(NUM_OF_TILES + 7);//TODO fix this
 	}
 
@@ -247,11 +306,14 @@ public class MainMap extends TileView{
 		mapLast.resetMap();
 		//noShape = true;
 		tempCount = 0;
+		score=0;
+		SCORE=0;
 		mRedrawHandler.sendEmptyMessage(1);//TODO change to final name ... START BY PLACING NEW FACTORNO
 	}
 
+
 	private Factorno newFactorno(int val, int x, int y) {
-			return new LFactorno(val,x, y);
+		return new LFactorno(val,x, y);
 	}
 
 	/**
@@ -310,7 +372,7 @@ public class MainMap extends TileView{
 	 * @param icicle a Bundle containing the game state
 	 */
 	public void restoreState(Bundle icicle) {
-		setMode(PAUSE);
+		setMode(READY);
 		mapCur = coordArrayToArrayList(icicle.getIntArray("mapCur"));
 		mapLast = coordArrayToArrayList(icicle.getIntArray("mapLast"));
 		mapOld = coordArrayToArrayList(icicle.getIntArray("mapOld"));
@@ -338,25 +400,35 @@ public class MainMap extends TileView{
 					xInitRaw = (int) Math.floor(event.getRawX());
 					yInitRaw = (int) Math.floor(event.getRawY());
 					yInitDrop = yInitRaw;
-                    Log.d(TAG, "xInitRaw = " + Integer.toString(xInitRaw));
-                    Log.d(TAG, "yInitRaw = " + Integer.toString(yInitRaw));
+					Log.d(TAG, "xInitRaw = " + Integer.toString(xInitRaw));
+					Log.d(TAG, "yInitRaw = " + Integer.toString(yInitRaw));
 					wasMoved = false;
 					if(xInitRaw > 275 && xInitRaw < 450 && yInitRaw > 25 && yInitRaw < 160) {
 						pausePressed = true;
 						if(mGameState == READY) {
-                            mGameState = PAUSE;
-//                            Context context = getContext();
-//                            Intent intent = new Intent(context,PauseGame.class);
-//                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//                            context.startActivity(intent);
-                        }
+							//   mGameState = PAUSE;
+							mRedrawHandler.pause();
+							Context context = getContext();
+							Intent intent = new Intent(context,PauseGame.class);
+							intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+							context.startActivity(intent);
+						}
 						else
 							mGameState = READY;
 					}
 
-                    if(xInitRaw > 100 && xInitRaw < 200 && yInitRaw > 150 && yInitRaw < 300) {
-                        mapCur.jumble();
-                    }
+					if(xInitRaw > 100 && xInitRaw < 200 && yInitRaw > 150 && yInitRaw < 300 && enablejumble==true) {
+						//mapInter.copyFrom(mapCur);
+						score=score-PENALTY;
+						SCORE=score;
+						if(score<PENALTY) {
+							enablejumble = false;
+						}
+						mapCur.jumble();
+						mapLast.copyFrom(mapCur);
+						update();
+
+					}
 				}
 
 				if(event.getAction() == MotionEvent.ACTION_MOVE && mGameState == READY && !pausePressed) {
@@ -450,17 +522,22 @@ public class MainMap extends TileView{
 		return true;
 	}
 
-	private static int[] getRandomFromArray() {
-		Random r = new Random();
+	public static int[] getRandomFromArray() {
 		int arr[] = new int[1000];
 		for (int i=0; i<1000; i++) {
 
-			if (i >= PTileInterval && i % PTileInterval == 0) {
+			if(i>=BLANKINTERVAL&&i%BLANKINTERVAL==0)
+			{
+				arr[i]=103;
+			}
+			else if(i>=BOMBINTERVAL&&i%BOMBINTERVAL==0)
+			{
+				arr[i]=107;
+			}
+
+			else {
 				Random random = new Random();
-				int c = random.nextBoolean() ? BLANK_TYPE : BOMB_TYPE;
-				arr[i]=c;
-			} else {
-				arr[i] = r.nextInt(ranRange - 4) + 4;
+				arr[i] = random.nextInt(ranRange - 4) + 4;
 
 			}
 		}
@@ -474,7 +551,7 @@ public class MainMap extends TileView{
 			mRedrawHandler.sleep(mMoveDelay);
 		}
 		else {//TODO convert to parametr and convert to final name
-			mRedrawHandler.sendEmptyMessageDelayed(1, 1000);
+			mRedrawHandler.sendEmptyMessageDelayed(1, 1000);//*************************
 		}
 	}
 
@@ -508,3 +585,4 @@ public class MainMap extends TileView{
 
 
 }
+

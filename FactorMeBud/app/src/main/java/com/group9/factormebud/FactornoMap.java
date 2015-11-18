@@ -260,45 +260,41 @@ public class FactornoMap {
 
     }//end of blank tile powerup
 
-    public void bombTilePowerup(int x, int y)
+    public int bombTilePowerup(int x, int y)
     {
+        int deltilecount=0;
         map[x][y]=0;
-        if((x-1)>=0&&(x-1)<7) {
+        if((x-1)>=0 && (x-1)<7 && map[x - 1][y]!= 0) {
             map[x - 1][y] = 0;
+            deltilecount++;
             int col = x - 1;
             for (int row = y; row > 0; row--) {
                 map[col][row] = map[col][row - 1];
             }
         }
-        if((y+1)>=0&&(y+1)<7) {
+        if((y+1)>=0&&(y+1)<7 && map[x][y + 1]!= 0) {
             map[x][y + 1] = 0;
+            deltilecount++;
             int col = x;
             for (int row = y+1; row > 0; row--) {
                 map[col][row] = map[col][row - 1];
             }
         }
-        if((x+1)>=0&&(x+1)<7) {
+        if((x+1)>=0&&(x+1)<7 && map[x + 1][y]!= 0) {
             map[x + 1][y] = 0;
+            deltilecount++;
             int col = x + 1;
             for (int row = y; row > 0; row--) {
                 map[col][row] = map[col][row - 1];
             }
         }
 
+        return deltilecount;
     }
 
-    public int patternCheckAndClear(int r, int c) {
+    public int[][] patternCheck(int r, int c) {
         int x = r;
         int y = c;
-        boolean isConsecutive=false;
-        boolean isContinuous=false;
-        int isConsecutiveCounter=0;
-        int isContinuousCounter=0;
-        ArrayList<Integer> removedelem = new ArrayList<Integer>();
-
-        int[][] removePos ;
-        int[][] sortremovePos = new int[10][2];
-        int removecounter = 0;
 
 
 
@@ -318,7 +314,7 @@ public class FactornoMap {
         count++;
         int x1pos = cpos[0][0];
         int y1pos = cpos[0][1];
-        if ((x1pos+y1pos != 0) && GCD(map[x1pos][y1pos], finalArray) > 1) {
+        if ((x1pos + y1pos != 0) && GCD(map[x1pos][y1pos], finalArray) > 1) {
             //finalArray[count]=c[1];
             finalArray[count] = map[x1pos][y1pos];
             finalArraypos[count][0] = x1pos;
@@ -330,7 +326,7 @@ public class FactornoMap {
             for (int i = 0; i < n1pos.length; i++) {
                 n1xpos = n1pos[i][0];
                 n1ypos = n1pos[i][1];
-                if ((n1xpos+n1ypos != 0) && GCD(map[n1xpos][n1ypos], finalArray) > 1) {
+                if ((n1xpos + n1ypos != 0) && GCD(map[n1xpos][n1ypos], finalArray) > 1) {
                     finalArray[count] = map[n1xpos][n1ypos];
                     finalArraypos[count][0] = n1xpos;
                     finalArraypos[count][1] = n1ypos;
@@ -341,7 +337,7 @@ public class FactornoMap {
 
         int x2pos = cpos[1][0];
         int y2pos = cpos[1][1];
-        if ((x2pos+y2pos != 0) && GCD(map[x2pos][y2pos], finalArray) > 1) {
+        if ((x2pos + y2pos != 0) && GCD(map[x2pos][y2pos], finalArray) > 1) {
             //finalArray[count++]=c[2];
             finalArray[count] = map[x2pos][y2pos];
             finalArraypos[count][0] = x2pos;
@@ -353,7 +349,7 @@ public class FactornoMap {
             for (int i = 0; i < n2pos.length; i++) {
                 n2xpos = n2pos[i][0];
                 n2ypos = n2pos[i][1];
-                if ((n2xpos+n2ypos != 0) && GCD(map[n2xpos][n2ypos], finalArray) > 1) {
+                if ((n2xpos + n2ypos != 0) && GCD(map[n2xpos][n2ypos], finalArray) > 1) {
                     //finalArray[count++]=n2[i];
                     finalArray[count] = map[n2xpos][n2ypos];
                     finalArraypos[count][0] = n2xpos;
@@ -364,7 +360,7 @@ public class FactornoMap {
         }
         int x3pos = cpos[2][0];
         int y3pos = cpos[2][1];
-        if ((x3pos+y3pos != 0) && GCD(map[x3pos][y3pos], finalArray) > 1) {
+        if ((x3pos + y3pos != 0) && GCD(map[x3pos][y3pos], finalArray) > 1) {
             //finalArray[count++]=c[3];
             finalArray[count] = map[x3pos][y3pos];
             finalArraypos[count][0] = x3pos;
@@ -376,7 +372,7 @@ public class FactornoMap {
             for (int i = 0; i < n3pos.length; i++) {
                 n3xpos = n3pos[i][0];
                 n3ypos = n3pos[i][1];
-                if ((n3xpos+n3ypos != 0) && GCD(map[n3xpos][n3ypos], finalArray) > 1) {
+                if ((n3xpos + n3ypos != 0) && GCD(map[n3xpos][n3ypos], finalArray) > 1) {
                     //finalArray[count++]=n3[i];
                     finalArray[count] = map[n3xpos][n3ypos];
                     finalArraypos[count][0] = n3xpos;
@@ -385,66 +381,80 @@ public class FactornoMap {
                 }
             }
         }
-        if (count >= 3) {
-            //return (finalArraypos);
+        //    if (count >= 3) {
+        return (finalArraypos);
+    }
 
-            removePos = finalArraypos;
+    public int clearPattern(int[][] finalArraypos)
+    {
+        TILES_DISAPPEARED=0;
+        boolean isConsecutive = false;
+        boolean isContinuous = false;
+        int isConsecutiveCounter = 0;
+        int isContinuousCounter = 0;
+        ArrayList<Integer> removedelem = new ArrayList<Integer>();
 
-            //sort the positions row-wise in ascending order
-            for (int rr = 1; rr < 7; rr++) {
-                for (int r1 = 0; r1 < 10; r1++) {
-                    if (removePos[r1][0] == 0 && removePos[r1][1] == 0) {
+        int[][] removePos;
+        int[][] sortremovePos = new int[10][2];
+        int removecounter = 0;
 
-                        break;
-                    } else {
-                        if (removePos[r1][1] == rr) {
-                            sortremovePos[removecounter][0] = removePos[r1][0];
-                            sortremovePos[removecounter][1] = removePos[r1][1];
-                            int remove_x=sortremovePos[removecounter][0];
-                            int remove_y=sortremovePos[removecounter][1];
-                            removedelem.add(map[remove_x][remove_y]);
-                            TILES_DISAPPEARED++;
-                            removecounter++;
+        removePos = finalArraypos;
 
-                        }
+        //sort the positions row-wise in ascending order
+        for (int rr = 1; rr < 7; rr++) {
+            for (int r1 = 0; r1 < 10; r1++) {
+                if (removePos[r1][0] == 0 && removePos[r1][1] == 0) {
+
+                    break;
+                } else {
+                    if (removePos[r1][1] == rr) {
+                        sortremovePos[removecounter][0] = removePos[r1][0];
+                        sortremovePos[removecounter][1] = removePos[r1][1];
+                        int remove_x=sortremovePos[removecounter][0];
+                        int remove_y=sortremovePos[removecounter][1];
+                        removedelem.add(map[remove_x][remove_y]);
+                        TILES_DISAPPEARED++;
+                        removecounter++;
+
                     }
-
                 }
 
             }
-            if(removedelem.size()>2) {
-                int diff=Math.abs(removedelem.get(1)-removedelem.get(0));
-                for (int i = 1; i < removedelem.size(); i++)//Check for patterns
-                {
-                    if(removedelem.get(i)==removedelem.get(i-1))
-                    {
-                        isContinuous=true;
-                        isContinuousCounter++;
-                    } else isContinuous=false;
-                    if (Math.abs(removedelem.get(i)-removedelem.get(i-1))==diff)
-                    {
-                        isConsecutive=true;
-                        isConsecutiveCounter++;
-
-                    }else isConsecutive=false;
-
-                }
-            }
-            for(int k=0;k<removecounter;k++)
-            {
-                Log.d(TAG, "X" + sortremovePos[k][0] + "Y" + sortremovePos[k][1]);
-            }
-
-            for (int i = 0; i < removecounter; i++) {
-                int col = sortremovePos[i][0];
-                for (int row = sortremovePos[i][1]; row > 0; row--) {
-                    map[col][row] = map[col][row - 1];
-                }
-
-            }
-
 
         }
+        if(removedelem.size()>2) {
+            int diff=Math.abs(removedelem.get(1)-removedelem.get(0));
+            for (int i = 1; i < removedelem.size(); i++)//Check for patterns
+            {
+                if(removedelem.get(i)==removedelem.get(i-1))
+                {
+                    isContinuous=true;
+                    isContinuousCounter++;
+                } else isContinuous=false;
+                if (Math.abs(removedelem.get(i)-removedelem.get(i-1))==diff)
+                {
+                    isConsecutive=true;
+                    isConsecutiveCounter++;
+
+                }else isConsecutive=false;
+
+            }
+        }
+        for(int k=0;k<removecounter;k++)
+        {
+            Log.d(TAG, "X" + sortremovePos[k][0] + "Y" + sortremovePos[k][1]);
+        }
+
+        for (int i = 0; i < removecounter; i++) {
+            int col = sortremovePos[i][0];
+            for (int row = sortremovePos[i][1]; row > 0; row--) {
+                map[col][row] = map[col][row - 1];
+            }
+
+        }
+
+
+        //   }
 
         for(int k=0;k<7;k++) {
             for (int l = 0; l < 7; l++) {
@@ -468,25 +478,25 @@ public class FactornoMap {
         {
             for(int col=0;col<7;col++)
             {
-                if (map[row][col]!=0)
+                if (map[row][col]>=4)
                 {
                     elempos.add(Arrays.asList(row, col));
                     elem.add(map[row][col]);
                     elemcount++;
-                    System.out.print("-"+elem.get(elemcount-1));
+                    //                  System.out.print("-"+elem.get(elemcount-1));
                     pos[row][col]=1;
                 }
             }
         }
 
-        System.out.println();
+        //     System.out.println();
         Collections.shuffle(elem);
-        Collections.shuffle(elem);
+        //      Collections.shuffle(elem);
 
-        for (int k=0;k<elemcount;k++)
-        {
-            System.out.print("-"+elem.get(k));
-        }
+//        for (int k=0;k<elemcount;k++)
+        //      {
+        //        System.out.print("-"+elem.get(k));
+        //  }
 
 
 /*	for(int point=0;point<elempos.size();point++)
@@ -496,7 +506,7 @@ public class FactornoMap {
 		}
 */
         int counter=0;
-        for(int row=6;row>=0;row--)
+        for(int row=0;row<7;row++)
         {
             for(int col=0;col<7;col++)
             {

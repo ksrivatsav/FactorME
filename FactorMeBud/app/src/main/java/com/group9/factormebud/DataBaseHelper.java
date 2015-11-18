@@ -78,7 +78,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     }
 
     /**
-     * Copies your database from your local assets-folder to the just created empty database in the
+     * Copies database from local assets-folder to the just created empty database in the
      * system folder, from where it can be accessed and handled.
      * This is done by transferring bytestream.
      * */
@@ -110,7 +110,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
         //Open the database
         String myPath = DB_PATH + DB_NAME;
-        myDataBase = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READONLY);
+        myDataBase = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READWRITE);
     }
 
     public ArrayList<ArrayList<Object>> getAllRowsAsArrays() {
@@ -143,6 +143,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 // move the cursor's pointer up one position.
                 while (cursor.moveToNext());
             }
+            cursor.close();
         }
         catch (SQLException e)
         {
@@ -169,6 +170,26 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion){
+
+    }
+
+    public void updateScr(int curLvlId, int curLvlHScr )
+    {
+        Cursor cursor;
+        String s = "Update LEVEL set Highscore = " + curLvlHScr + " where _id = " + curLvlId;
+        cursor = myDataBase.rawQuery(s, null);
+        cursor.moveToFirst();
+        cursor.close();
+
+    }
+
+    public void unlckLvl(int nxtLvlId)
+    {
+        Cursor cursor;
+        String st = "update LEVEL set isLocked = 'N' where _id = " + nxtLvlId;
+        cursor = myDataBase.rawQuery(st, null);
+        cursor.moveToFirst();
+        cursor.close();
 
     }
 }
