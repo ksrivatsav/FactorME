@@ -7,10 +7,13 @@ package com.group9.factormebud;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.SQLException;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
+
+import java.io.IOException;
 
 public class Gameover extends Activity implements View.OnClickListener {
     private Button tryagain,mainmenu;
@@ -26,6 +29,44 @@ public class Gameover extends Activity implements View.OnClickListener {
         overLayout = (RelativeLayout) findViewById(R.id.overLayout);
 
         applyTheme();
+
+        Bundle extras = getIntent().getExtras();
+        if(extras!=null){
+            SharedPreferences sharedPrefs = getSharedPreferences(getString(R.string.PREF_FILE), MODE_PRIVATE);
+            SharedPreferences.Editor ed;
+            int lcurlvlid = sharedPrefs.getInt(getString(R.string.curLvlId), 1);
+            int lcurlvlHScr = sharedPrefs.getInt(getString(R.string.curLvlHScr), 0);
+            int curHscr = extras.getInt("Score");
+            DataBaseHelper myDbHelper;
+            myDbHelper = new DataBaseHelper(this);
+            curHscr = getIntent().getIntExtra("Score",0);
+
+            if (curHscr > lcurlvlHScr){
+                ed = sharedPrefs.edit();
+                ed.putInt(getString(R.string.curLvlHScr),curHscr);
+                ed.commit();
+                try {
+                    myDbHelper.createDataBase();
+                } catch (IOException ioe) {
+                    throw new Error("Unable to create database");
+                }
+
+                try {
+                    myDbHelper.openDataBase();
+                }catch(SQLException sqle){
+                    throw sqle;
+                }
+
+                myDbHelper.updateScr(lcurlvlid, curHscr);
+                if ((lcurlvlid == 1 && curHscr > 300) || (lcurlvlid == 2 && curHscr > 450 ) ||  (lcurlvlid == 3 && curHscr > 750 ) ){
+                    //Unlock the next levels
+                    int lnxtlvlid = lcurlvlid + 1;
+                    myDbHelper.unlckLvl(lnxtlvlid);
+                }
+                // Close the database connection.
+                myDbHelper.close();
+            }
+        }
 
         tryagain.setOnClickListener(this);
         mainmenu.setOnClickListener(this);

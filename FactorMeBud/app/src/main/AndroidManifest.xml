@@ -21,6 +21,7 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
+            android:configChanges="locale|orientation|keyboardHidden"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" >
             <intent-filter>
@@ -42,6 +43,8 @@
         <activity
             android:name=".Settings"
             android:label="@string/title_activity_settings"
+            android:configChanges="locale|orientation|keyboardHidden"
+            android:noHistory="true"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" >
@@ -52,6 +55,7 @@
         <activity
             android:name=".GamePlay"
             android:label="@string/title_activity_game_play"
+            android:configChanges="locale|orientation|keyboardHidden"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" >
@@ -61,6 +65,7 @@
         </activity>
         <activity
             android:name=".ViewTutorial"
+            android:configChanges="locale|orientation|keyboardHidden"
             android:label="@string/View_intro"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" >
@@ -68,6 +73,7 @@
         <activity
             android:name=".PauseGame"
             android:label="@string/title_activity_pause_game"
+            android:configChanges="locale|orientation|keyboardHidden"
             android:screenOrientation="portrait"
             android:parentActivityName=".GamePlay">
             <meta-data
@@ -77,6 +83,8 @@
         <activity
             android:name=".Gameover"
             android:label="GAME OVER"
+            android:configChanges="locale|orientation|keyboardHidden"
+            android:noHistory="true"
             android:screenOrientation="portrait"
             android:parentActivityName=".GamePlay">
             <meta-data

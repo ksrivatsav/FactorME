@@ -36,7 +36,7 @@ public class GamePlay extends AppCompatActivity {
         if (lcurlvlid == 1 || lcurlvlid == 3){
             mMainMapView.mMoveDelay = 1200;
         }else{
-            mMainMapView.mMoveDelay = 600;
+            mMainMapView.mMoveDelay = 1000;
         }
         if (lcurlvlid == 3 || lcurlvlid == 4){
             mMainMapView.ranRange = 100;

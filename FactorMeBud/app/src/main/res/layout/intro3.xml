@@ -44,7 +44,7 @@
         android:paddingLeft="64dp"
         android:paddingRight="64dp"
         android:textSize="16sp"
-        android:text="Bomb Tile demolishes its neighbour tiles. Blank tiile associates with the other elements on the board"/>
+        android:text="@string/intro_3"/>
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="64dp" />

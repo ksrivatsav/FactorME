@@ -11,6 +11,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 
 import android.view.MotionEvent;
+import android.widget.Toast;
 
 import java.util.Random;
 import java.util.Stack;
@@ -108,6 +109,8 @@ public class MainMap extends TileView{
 	public static final int READY = 1;
 	public static final int PAUSE = 0;
 
+	private Context mContext;
+
 
 //	private PopupWindow popupWindow;
 //	private LayoutInflater layoutInflater;
@@ -193,7 +196,11 @@ public class MainMap extends TileView{
 										//mRedrawHandler.postDelayed();
 										int rawscore = mapCur.clearPattern(arraypos);
 										if (rawscore == 50 || rawscore == 100) score = score + rawscore;
-										else score = score + (rawscore * scorefactor);
+										else {
+											if(rawscore>=5)
+												Toast.makeText(mContext, "GENIUS!", Toast.LENGTH_SHORT).show();
+											score = score + (rawscore * scorefactor);
+										}
 										SCORE = score;
 										if(score>PENALTY)
 											enablejumble=true;
@@ -233,12 +240,17 @@ public class MainMap extends TileView{
 
 					if(!mapCur.putFactornoOnMap(curFactorno)) {
 						Log.d(TAG, "Game Over!");
-						initNewGame();
+						pausePressed = true;
+						mRedrawHandler.pause();
+						//initNewGame();
 						mGameState = PAUSE;
 
 						Context context = getContext();
 						Intent intent = new Intent(context,Gameover.class);
 						intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+						Bundle b = new Bundle();
+						b.putInt("Score",score);
+						intent.putExtra("Score",score);
 						context.startActivity(intent);
 
 					}
@@ -271,6 +283,7 @@ public class MainMap extends TileView{
 	 */
 	public MainMap(Context context, AttributeSet attrs) {
 		super(context, attrs);
+		mContext = context;
 		Log.d(TAG, "MainMap constructor");
 		initMainMap();
 	}
@@ -279,6 +292,7 @@ public class MainMap extends TileView{
 
 	public MainMap(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
+		mContext = context;
 		Log.d(TAG, "MainMap constructor defStyle");
 		initMainMap();
 	}

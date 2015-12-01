@@ -4,9 +4,12 @@ package com.group9.factormebud;
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
@@ -14,14 +17,16 @@ import android.widget.TextView;
 
 
 import java.io.IOException;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     public Button btPlay, btLevels, btSettings;
     private int lCurLvlHSc;
     private TextView sCurLvlHsc;
-    private boolean lThemeChg, playMusic;
+    private boolean lThemeChg, playMusic, gLocale;
     public RelativeLayout mainLayout;
+    Locale myLocale;
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -40,6 +45,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             ed.putInt(getString(R.string.curLvlId), 1);
             ed.putInt(getString(R.string.curLvlHScr), 0);
             ed.putBoolean(getString(R.string.curTheme), false);
+            ed.putBoolean(getString(R.string.curLang), false);
             ed.commit();
         }
 
@@ -62,10 +68,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             startMusic();
         }
 
-//        ed = sharedPrefs.edit();
-//        ed.putInt(getString(R.string.curLvlHScr), 100);
-//        ed.commit();
-
+        gLocale = sharedPrefs.getBoolean(getString(R.string.curLang),false);
 
         btPlay = (Button) findViewById(R.id.btPlay);
         btLevels = (Button) findViewById(R.id.btLevels);
@@ -100,6 +103,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(new Intent(this, LevelsActivity.class));
                 break;
             case R.id.btSettings:
+                SharedPreferences sharedPrefs = getSharedPreferences(getString(R.string.PREF_FILE), MODE_PRIVATE);
+                boolean lCurLang  = sharedPrefs.getBoolean(getString(R.string.curLang),false);
                 startActivity(new Intent(this, Settings.class));
                 break;
         }
@@ -130,6 +135,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         lCurLvlHSc = sharedPrefs.getInt(getString(R.string.curLvlHScr), 0);
         sCurLvlHsc = (TextView) findViewById(R.id.sCurLvlHsc);
         sCurLvlHsc.setText(String.valueOf(lCurLvlHSc));
+
+        boolean lLocale = sharedPrefs.getBoolean(getString(R.string.curLang),false);
+        if (gLocale != lLocale){
+            this.recreate();
+        }
     }
 
     @Override

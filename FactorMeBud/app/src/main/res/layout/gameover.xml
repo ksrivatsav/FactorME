@@ -14,7 +14,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="GAME OVER!"
+        android:text="@string/gameover"
         android:id="@+id/textView"
         android:layout_marginTop="50dp"
         android:textSize="50sp"
@@ -26,7 +26,7 @@
     <Button
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="TRY AGAIN"
+        android:text="@string/try_again"
         android:id="@+id/bttryagain"
         android:layout_centerVertical="true"
         android:background="@drawable/enter_back"
@@ -39,7 +39,7 @@
     <Button
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="Main Menu"
+        android:text="@string/main_menu"
         android:id="@+id/btmain"
         android:layout_marginTop="20dp"
         android:textSize="45dp"

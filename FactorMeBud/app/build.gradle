@@ -1,14 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
-    signingConfigs {
+    /*signingConfigs {
         Naveen {
             keyAlias 'naveen'
             keyPassword 'NaveenJetty'
             storeFile file('D:/2-undercut-haircut-for-men.jpg')
             storePassword 'NaveenJetty'
         }
-    }
+    }*/
     compileSdkVersion 23
     buildToolsVersion "23.0.1"
     defaultConfig {
